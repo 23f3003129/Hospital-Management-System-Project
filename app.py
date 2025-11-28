@@ -5,7 +5,7 @@ from datetime import datetime, date, timedelta, time
 from sqlalchemy import or_, and_, func
 
 
-# App and DB Setup
+# App and Database Setup
 
 
 PREDEFINED_SLOTS = [
