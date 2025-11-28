@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f2f4f8;
+      color: #333;
+    }
+    header {
+      background: #0066cc;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1, h2 {
+      margin-bottom: 10px;
+    }
+    main { padding: 2rem; }
+    .section {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th { background: #e6f0ff; }
+    .btn {
+      background: #0066cc;
+      color: white;
+      padding: 8px 14px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover { background: #004c99; }
+    .status { font-weight: bold; }
+    .booked { color: red; }
+    .available { color: green; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Doctor Dashboard</h1>
+
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span>Welcome, Dr. {{ doctor.name }}</span>
+
+      <a href="/doctor/slots" class="btn">Manage Slots</a>
+
+      <a href="/logout" class="btn" style="background:red;">Logout</a>
+    </div>
+  </header>
+
+
+  <main>
+
+    
+    <div class="section">
+      <h2>Doctor Information</h2>
+      <p><strong>Name:</strong> {{ doctor.name }}</p>
+      <p><strong>Email:</strong> {{ doctor.email }}</p>
+      <p><strong>Specialization:</strong> {{ doctor.specialization or "Not specified" }}</p>
+    </div>
+
+   
+    <div class="section">
+      <h2>Available Slots</h2>
+      {% if slots %}
+        <table>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+          {% for slot in slots %}
+            <tr>
+              <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+              <td>{{ slot.time.strftime('%H:%M') }}</td>
+              <td class="status">
+                {% if slot.is_booked and slot.appointment %}
+                    <span class="booked">Booked</span>
+                {% elif slot.is_booked %}
+                    <span class="unavailable">Unavailable</span>
+                {% else %}
+                    <span class="available">Available</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p>No available slots yet. <a href="/doctor/slots">Add slots</a></p>
+      {% endif %}
+    </div>
+
+    
+    <div class="section">
+      <h2>Appointments</h2>
+      {% if appointments %}
+        <table>
+          <tr>
+            <th>Appointment ID</th>
+            <th>Patient Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+          {% for appt in appointments %}
+            <tr>
+              <td>{{ appt.aid }}</td>
+              <td>{{ appt.patient.name }}</td>
+              <td>{{ appt.slot.date.strftime('%Y-%m-%d') }}</td>
+              <td>{{ appt.slot.time.strftime('%H:%M') }}</td>
+              <td>{{ appt.status }}</td>
+              <td>
+                {% if appt.status.lower() == 'booked' %}
+                  <a href="{{ url_for('doctor_appointment_detail', aid=appt.aid) }}"
+                     class="btn"
+                     style="background:#28a745; padding:6px 10px; font-size:0.8rem;">
+                    Complete
+                  </a>
+                  <form method="post"
+                        action="{{ url_for('doctor_cancel_appointment', aid=appt.aid) }}"
+                        style="display:inline;">
+                    <button type="submit"
+                            class="btn"
+                            style="background:#cc0000; padding:6px 10px; font-size:0.8rem;">
+                      Cancel
+                    </button>
+                  </form>
+                {% else %}
+                  <span style="color:#777;">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p>No appointments yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="section">
+      <h2>Today's Upcoming Appointments</h2>
+      {% if today_upcoming %}
+        <table>
+          <tr>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+          {% for appt in today_upcoming %}
+          <tr>
+            <td>{{ appt.slot.time.strftime('%H:%M') }}</td>
+            <td>{{ appt.patient.name }}</td>
+            <td>{{ appt.status }}</td>
+            <td>
+              <a href="{{ url_for('doctor_appointment_detail', aid=appt.aid) }}"
+                 class="btn" style="padding:6px 10px; font-size:0.8rem;">Open</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p>No upcoming appointments today.</p>
+      {% endif %}
+    </div>
+
+    <div class="section">
+      <h2>Upcoming Appointments (Next 7 Days)</h2>
+      {% if week_upcoming %}
+        <table>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+          {% for appt in week_upcoming %}
+          <tr>
+            <td>{{ appt.slot.date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ appt.slot.time.strftime('%H:%M') }}</td>
+            <td>{{ appt.patient.name }}</td>
+            <td>{{ appt.status }}</td>
+            <td>
+              <a href="{{ url_for('doctor_appointment_detail', aid=appt.aid) }}"
+                 class="btn" style="padding:6px 10px; font-size:0.8rem;">Open</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p>No upcoming appointments this week.</p>
+      {% endif %}
+    </div>
+
+    <div class="section">
+      <h2>Patients Assigned to You</h2>
+      {% if patients_assigned %}
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Action</th>
+          </tr>
+          {% for p in patients_assigned %}
+          <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.age }}</td>
+            <td>{{ p.gender }}</td>
+            <td>
+              <a href="{{ url_for('doctor_patient_profile', pid=p.uid) }}"
+                 class="btn" style="padding:6px 10px; font-size:0.8rem;">View History</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p>No patients assigned yet.</p>
+      {% endif %}
+    </div>
+
+
+    <div class="section">
+      <h2>Your Free Slots (Next 7 Days)</h2>
+      {% if next7_free_slots %}
+        <table>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+          </tr>
+          {% for slot in next7_free_slots %}
+          <tr>
+            <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ slot.time.strftime('%H:%M') }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p>No free slots available in the next 7 days.</p>
+      {% endif %}
+      <p style="margin-top:10px;">
+        <a href="/doctor/slots" class="btn" style="padding:6px 10px; font-size:0.8rem;">Manage Slots</a>
+      </p>
+    </div>
+
+  </main>
+</body>
+</html>

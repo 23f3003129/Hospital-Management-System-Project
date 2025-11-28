@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Profile</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f2f4f8; margin:0; }
+    header { background:#0066cc; color:#fff; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; }
+    main { padding:2rem; }
+    .card { background:#fff; border-radius:10px; padding:1.5rem; box-shadow:0 2px 5px rgba(0,0,0,.1); max-width:700px; }
+    .row { display:grid; grid-template-columns: 160px 1fr; gap:10px; margin:.3rem 0; }
+    .label { color:#555; }
+    .btn { background:#0066cc; color:#fff; padding:8px 14px; border-radius:6px; text-decoration:none; }
+    .btn:hover { background:#004c99; }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Patient Profile</h2>
+    <div>
+      <a href="/userdashboard" class="btn">Dashboard</a>
+      <a href="/patient/profile/edit" class="btn">Edit Profile</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="row"><div class="label">Name</div><div>{{ patient.name }}</div></div>
+      <div class="row"><div class="label">Email</div><div>{{ patient.email }}</div></div>
+      <div class="row"><div class="label">Age</div><div>{{ patient.age }}</div></div>
+      <div class="row"><div class="label">Gender</div><div>{{ patient.gender }}</div></div>
+    </div>
+  </main>
+</body>
+</html>

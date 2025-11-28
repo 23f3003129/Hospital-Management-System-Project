@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Patient History</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px; border-bottom: 1px solid #ddd; }
+    th { background: #e6f0ff; }
+    .btn { background:#0066cc; color:white; padding:6px 12px; border-radius:5px; text-decoration:none; }
+  </style>
+</head>
+<body>
+
+  <h2>Patient: {{ patient.name }}</h2>
+  <p><strong>Age:</strong> {{ patient.age }}  
+     | <strong>Gender:</strong> {{ patient.gender }}</p>
+
+  <h3>Treatment History (with you)</h3>
+
+  {% if history %}
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Diagnosis</th>
+        <th>Prescription</th>
+        <th>Notes</th>
+        <th>Action</th>
+      </tr>
+      {% for ap in history %}
+      <tr>
+        <td>{{ ap.slot.date }}</td>
+        <td>{{ ap.slot.time }}</td>
+        <td>{{ ap.status }}</td>
+        <td>{{ ap.diagnosis or '-' }}</td>
+        <td>{{ ap.prescription or '-' }}</td>
+        <td>{{ ap.notes or '-' }}</td>
+        <td>
+          <a href="{{ url_for('doctor_appointment_detail', aid=ap.aid) }}"
+             class="btn">Open</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>No history found.</p>
+  {% endif %}
+
+</body>
+</html>

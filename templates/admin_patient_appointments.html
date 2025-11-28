@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Patient Appointments</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="mb-0">
+        Appointments — {{ patient.name }} (ID: {{ patient.uid }})
+      </h2>
+      <a href="/admin/patients" class="btn btn-secondary">⬅ Back to Patients</a>
+    </div>
+
+    {% if appointments %}
+      <div class="card p-3 shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped mb-0 align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Doctor</th>
+                <th>Status</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in appointments %}
+              <tr>
+                <td>{{ a.aid }}</td>
+                <td>{{ a.slot.date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ a.slot.time.strftime('%H:%M') }}</td>
+                <td>Dr. {{ a.doctor.name }}</td>
+                <td>{{ a.status.title() }}</td>
+                <td>{{ (a.diagnosis or '—')[:80] }}</td>
+                <td>{{ (a.prescription or '—')[:80] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="text-muted mt-2" style="font-size:.9rem;">
+          
+        </div>
+      </div>
+    {% else %}
+      <div class="alert alert-info">No appointments found for this patient.</div>
+    {% endif %}
+
+  </div>
+</body>
+</html>

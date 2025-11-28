@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Treatment History</title>
+
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; background:#f2f4f8; color:#333; }
+    header {
+      background:#0066cc; color:white; padding:1rem 2rem;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    main { padding:2rem; }
+    h1 { margin-bottom:1rem; }
+    .card {
+      background:white; border-radius:10px; padding:1.5rem;
+      margin-bottom:1rem; box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    }
+    .label { font-weight:bold; margin-top:8px; margin-bottom:4px; }
+    .value { margin-left:8px; }
+    .pill {
+      background:#e6f0ff; color:#003366;
+      padding:6px 12px; border-radius:50px; font-size:0.8rem;
+      display:inline-block; margin-right:10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>My Treatment History</h2>
+  <a href="/userdashboard" style="color:white; text-decoration:none;">← Back</a>
+</header>
+
+<main>
+  {% if history %}
+    {% for appt in history %}
+      <div class="card">
+        
+        <div style="margin-bottom:10px;">
+          <span class="pill">{{ appt.slot.date.strftime('%Y-%m-%d') }}</span>
+          <span class="pill">{{ appt.slot.time.strftime('%H:%M') }}</span>
+          <span class="pill">Dr. {{ appt.doctor.name }}</span>
+        </div>
+
+        <div>
+          <div class="label">Diagnosis:</div>
+          <div class="value">{{ appt.diagnosis or "No diagnosis added" }}</div>
+
+          <div class="label">Prescription:</div>
+          <div class="value">{{ appt.prescription or "No prescription added" }}</div>
+
+          <div class="label">Notes:</div>
+          <div class="value">{{ appt.notes or "No notes available" }}</div>
+        </div>
+
+      </div>
+    {% endfor %}
+  
+  {% else %}
+    <p>No completed appointments yet.</p>
+  {% endif %}
+</main>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Doctor Confirmation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <div class="container py-5 text-center">
+        <div class="card shadow-sm p-5">
+            <h3 class="text-danger">Confirm Deletion</h3>
+            <p>Are you sure you want to permanently delete <strong>{{ doctor.name }}</strong> ({{ doctor.email }})?</p>
+
+            <div class="mt-4">
+                <a href="/confirm_delete_doctor/{{ doctor.uid }}" class="btn btn-danger">Yes, Delete</a>
+                <a href="/admindashboard" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

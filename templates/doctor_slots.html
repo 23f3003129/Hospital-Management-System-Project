@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Doctor Slots</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .card {
+      border-radius: 10px;
+    }
+    .status-badge {
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-4">
+    <h2 class="mb-3 text-center text-primary">Manage Slots</h2>
+
+    <div class="text-center mb-4">
+      <a href="{{ url_for('doctordashboard') }}" class="btn btn-secondary me-2">← Back to Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-light fw-bold">Add Manual Slot</div>
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('add_slot') }}" class="row g-3">
+
+          <input type="hidden" name="manual_slot" value="true">
+          
+          <div class="col-md-5">
+            <label class="form-label">Date</label>
+            <input type="date" name="date" class="form-control" required>
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">Time</label>
+            <input type="time" name="time" class="form-control" required>
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-success w-100">Add Slot</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-header bg-light fw-bold">Your Available Slots</div>
+      <div class="card-body">
+        {% if slots %}
+          <table class="table table-bordered align-middle text-center">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for slot in slots %}
+                <tr>
+                  <td>{{ slot.date.strftime('%Y-%m-%d') }}</td>
+                  <td>{{ slot.time.strftime('%H:%M') }}</td>
+                  <td>
+                    {% if slot.is_booked and slot.appointment %}
+                      <span class="badge bg-danger status-badge">Booked</span>
+                    {% elif slot.is_booked %}
+                      <span class="badge bg-secondary status-badge">Unavailable</span>
+                    {% else %}
+                      <span class="badge bg-success status-badge">Available</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if slot.is_booked and slot.appointment %}
+                      <button class="btn btn-sm btn-outline-secondary" disabled>Booked</button>
+                    {% else %}
+                      <a href="{{ url_for('toggle_slot', slot_id=slot.sid) }}" 
+                         class="btn btn-sm {% if slot.is_booked %}btn-success{% else %}btn-warning{% endif %}">
+                        {% if slot.is_booked %}Mark Available{% else %}Mark Unavailable{% endif %}
+                      </a>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="text-center text-muted">No slots found. Generate default or add manually.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+
+</body>
+</html>

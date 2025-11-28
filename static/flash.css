@@ -1,0 +1,29 @@
+.flash-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.flash {
+    background-color: #e3f2fd;       
+    color: #0d47a1;                
+    border: 1px solid #90caf9;     
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    animation: fadeOut 4s forwards;
+}
+
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}

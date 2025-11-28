@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Appointments</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin:0; background:#f7f7f8; color:#111; }
+    header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:#fff; border-bottom:1px solid #e5e7eb; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; }
+    th, td { text-align:left; padding:12px; border-bottom:1px solid #f1f5f9; }
+    th { background:#f1f5ff; }
+    .pill { padding:6px 10px; border-radius:999px; font-size:12px; }
+    .pill-booked { background:#dcfce7; }
+    .pill-cancelled { background:#fee2e2; }
+    .pill-completed { background:#e5e7eb; }
+    form { margin:0; }
+    button { border:0; background:#111; color:#fff; padding:8px 10px; border-radius:10px; cursor:pointer; }
+    button[disabled] { opacity:.5; cursor:not-allowed; }
+    .btn-secondary { background:#6b7280; }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800;">🏥 HMS — My Appointments</div>
+    <div>
+      <a href="{{ url_for('userdashboard') }}" style="text-decoration:none;">← Back to Dashboard</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div style="padding:12px 16px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; margin-bottom:12px;">
+          {% for message in messages %}<div>{{ message }}</div>{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if appointments %}
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Doctor</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in appointments %}
+            <tr>
+              <td>{{ a.slot.date.strftime('%Y-%m-%d') }}</td>
+              <td>{{ a.slot.time.strftime('%H:%M') }}</td>
+              <td>Dr. {{ a.doctor.name }} ({{ a.doctor.specialization or "General" }})</td>
+              <td>
+                {% set s = a.status.lower() %}
+                <span class="pill
+                  {% if s=='booked' %}pill-booked{% elif s=='completed' %}pill-completed{% else %}pill-cancelled{% endif %}">
+                  {{ a.status.title() }}
+                </span>
+              </td>
+              <td>
+                {% set can_cancel = (a.status.lower()=='booked') %}
+                <form method="post" action="{{ url_for('patient_cancel_appointment', aid=a.aid) }}" style="display:inline;">
+                  <button type="submit" {% if not can_cancel %}disabled{% endif %}>Cancel</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div style="color:#555;">No upcoming appointments.</div>
+    {% endif %}
+  </div>
+</body>
+</html>

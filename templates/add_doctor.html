@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Doctor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='flash.css') }}">
+
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Add Doctor</h2>
+
+
+    <form action="/add_doctor" method="POST">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" name="name" required>
+        </div>
+
+        <div>
+            <label for="age">Age:</label>
+            <input type="number" name="age" required>
+        </div>
+
+        <div>
+            <label for="gender">Gender:</label>
+            <select name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+        </div>
+
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" name="password" required>
+        </div>
+
+        <div>
+            <label for="specialization">Specialization:</label>
+            <input type="text" name="specialization" required>
+        </div>
+
+        <button type="submit">Add Doctor</button>
+    </form>
+
+    <br>
+    <a href="/admindashboard">Back to Dashboard</a>
+</body>
+</html>

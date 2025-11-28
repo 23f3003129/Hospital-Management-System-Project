@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin: Search Doctors</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <h2 class="mb-3">Admin: Search Doctors</h2>
+  <a href="/admindashboard" class="btn btn-secondary mb-3">⬅ Back to Dashboard</a>
+
+  <form method="GET" class="card p-3 shadow-sm mb-4">
+    <label class="form-label">Search by name, specialization, or email</label>
+    <div class="d-flex gap-2">
+      <input class="form-control" name="q" value="{{ q or '' }}" placeholder="e.g., Mehta or Orthopedics or mehta@...">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+  </form>
+
+  {% if q and not doctors %}
+    <div class="alert alert-info">No doctors found for "<strong>{{ q }}</strong>".</div>
+  {% endif %}
+
+  {% if doctors %}
+    <div class="card p-3 shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th><th>Name</th><th>Email</th><th>Specialization</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in doctors %}
+            <tr>
+              <td>{{ d.uid }}</td>
+              <td>{{ d.name }}</td>
+              <td>{{ d.email }}</td>
+              <td>{{ d.specialization or '—' }}</td>
+              <td>
+                {% if d.is_blacklisted %}
+                  <span class="badge bg-danger">Blacklisted</span>
+                {% else %}
+                  <span class="badge bg-success">Active</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if d.is_blacklisted %}
+                  <a class="btn btn-sm btn-success" href="/unblacklist/{{ d.uid }}">Unblacklist</a>
+                {% else %}
+                  <a class="btn btn-sm btn-secondary" href="/blacklist/{{ d.uid }}">Blacklist</a>
+                {% endif %}
+                <a class="btn btn-sm btn-outline-primary" href="/update_doctor/{{ d.uid }}">Update</a>
+                <a class="btn btn-sm btn-outline-danger" href="/delete_doctor/{{ d.uid }}">Delete</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+</div>
+</body>
+</html>
